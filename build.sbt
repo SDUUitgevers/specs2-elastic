@@ -1,4 +1,4 @@
-organization := "nl.sdu"
+organization := "nl.sdu.elastic"
 
 name := "specs2-elastic"
 
@@ -15,9 +15,9 @@ libraryDependencies ++= Seq(
 publishTo := {
   val artifactory = "http://srv1075bh.sdu.nl:8081/artifactory/"
   if (version.value.trim.endsWith("SNAPSHOT"))
-    Some("snapshots" at artifactory + "utility-snapshots")
+    Some("snapshots" at artifactory + "cwc-snapshots")
   else
-    Some("releases" at artifactory + "utility-releases")
+    Some("releases" at artifactory + "cwc-releases")
 }
 
 releaseSettings

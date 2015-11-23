@@ -1,4 +1,4 @@
-package nl.sdu.specs2elastic
+package nl.sdu.elastic.specs2elastic
 
 import java.net.ServerSocket
 
@@ -15,9 +15,9 @@ import org.elasticsearch.node.NodeBuilder._
  */
 trait TestElastic extends ElasticSugar {
 
-  private val host = "127.0.0.1"
-  private val port = findPort
-  private val clusterName = s"elasticsearch-test-${scala.util.Random.nextLong()}"
+  val host = "127.0.0.1"
+  val port = findPort
+  val clusterName = s"elasticsearch-test-${scala.util.Random.nextLong()}"
 
   val node: Node = nodeBuilder().settings(newSettings.build()).local(false).node()
 
@@ -45,6 +45,8 @@ trait TestElastic extends ElasticSugar {
 
   def findPort: Int = {
     val socket: ServerSocket = new ServerSocket(0)
-    socket.getLocalPort
+    val freePort = socket.getLocalPort
+    socket.close()
+    freePort
   }
 }
