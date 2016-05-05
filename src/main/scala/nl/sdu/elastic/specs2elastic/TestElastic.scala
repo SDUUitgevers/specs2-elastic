@@ -1,11 +1,11 @@
 package nl.sdu.elastic.specs2elastic
 
-import java.net.ServerSocket
+import java.net.{ InetAddress, ServerSocket }
 
 import com.sksamuel.elastic4s.ElasticClient
 import com.sksamuel.elastic4s.testkit.ElasticSugar
 import org.elasticsearch.client.transport.TransportClient
-import org.elasticsearch.common.settings.ImmutableSettings
+import org.elasticsearch.common.settings.Settings
 import org.elasticsearch.common.transport.InetSocketTransportAddress
 import org.elasticsearch.node.Node
 import org.elasticsearch.node.NodeBuilder._
@@ -23,19 +23,26 @@ trait TestElastic extends ElasticSugar {
 
   val testElastic = Seq("elastic.host" -> host, "elastic.port" -> port, "elastic.cluster" -> clusterName).toMap
 
-  override def createLocalClient = ElasticClient.fromClient(new TransportClient(newSettings.build()).addTransportAddress(new InetSocketTransportAddress(host, port)))
+  override def createLocalClient = ElasticClient.fromClient(
+    TransportClient.builder().settings(newSettings.build()).build().addTransportAddress(
+      new InetSocketTransportAddress(InetAddress.getByName(host), port)))
 
-  def newSettings: ImmutableSettings.Builder = {
-    val builder = ImmutableSettings.settingsBuilder()
+  def newSettings: Settings.Builder = {
+    val home = testNodeHomePath
+    val conf = testNodeConfPath
+    conf.toFile.mkdirs()
+    conf.toFile.deleteOnExit()
+    val builder = Settings.settingsBuilder()
       .put("node.http.enabled", httpEnabled)
       .put("network.host", host)
       .put("transport.tcp.port", port)
       .put("cluster.name", clusterName)
       .put("http.enabled", httpEnabled)
-      .put("path.home", homeDir.getAbsolutePath)
+      .put("path.home", home.toFile.getAbsolutePath)
       .put("index.number_of_shards", numberOfShards)
       .put("index.number_of_replicas", numberOfReplicas)
-      .put("script.disable_dynamic", disableDynamicScripting)
+      .put("script.inline", true)
+      .put("script.indexed", true)
       .put("index.refresh_interval", indexRefresh.toSeconds + "s")
       .put("discovery.zen.ping.multicast.enabled", "false")
       .put("discovery.zen.ping.unicast.hosts", s"$host:$port")

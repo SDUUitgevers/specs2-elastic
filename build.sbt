@@ -4,11 +4,11 @@ name := "specs2-elastic"
 
 description := "Tools that allow specs2 tests to use their own Elasticsearch instance"
 
-scalaVersion := "2.11.6"
+scalaVersion := "2.11.8"
 
 libraryDependencies ++= Seq(
-  "com.sksamuel.elastic4s" %% "elastic4s-core" % "1.7.4",
-  "com.sksamuel.elastic4s" %% "elastic4s-testkit" % "1.7.4"
+  "com.sksamuel.elastic4s" %% "elastic4s-core" % "2.3.0" % Provided,
+  "com.sksamuel.elastic4s" %% "elastic4s-testkit" % "2.3.0" % Provided
 )
 
 // Publishing
